@@ -1498,6 +1498,7 @@ bool Adafruit_PN532::readack() {
 */
 /**************************************************************************/
 bool Adafruit_PN532::isready() {
+  printf("\nisready:\n");
   if (_usingSPI) {
     // SPI read status and check if ready.
     #ifdef SPI_HAS_TRANSACTION
@@ -1532,6 +1533,7 @@ bool Adafruit_PN532::isready() {
 */
 /**************************************************************************/
 bool Adafruit_PN532::waitready(uint16_t timeout) {
+  printf("\nwaitready:\n");
   uint16_t timer = 0;
   while(!isready()) {
     if (timeout != 0) {
@@ -1718,6 +1720,7 @@ uint8_t Adafruit_PN532::setDataTarget(uint8_t* cmd, uint8_t cmdlen) {
 */
 /**************************************************************************/
 void Adafruit_PN532::writecommand(uint8_t* cmd, uint8_t cmdlen) {
+  printf("\nwritecommand:\n");
   if (_usingSPI) {
     // SPI command write.
     uint8_t checksum;
@@ -1842,6 +1845,7 @@ void Adafruit_PN532::writecommand(uint8_t* cmd, uint8_t cmdlen) {
 */
 /**************************************************************************/
 void Adafruit_PN532::spi_write(uint8_t c) {
+  printf("\nspi_write:\n");
   if (_hardwareSPI) {
     // Hardware SPI write.
     spi_bus.transferByte(c);
@@ -1871,6 +1875,7 @@ void Adafruit_PN532::spi_write(uint8_t c) {
 */
 /**************************************************************************/
 uint8_t Adafruit_PN532::spi_read(void) {
+  printf("\nspi_read:\n");
   int8_t i, x;
   x = 0;
 

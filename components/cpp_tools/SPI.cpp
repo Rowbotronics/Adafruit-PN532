@@ -62,7 +62,7 @@ void SPI::init(int mosiPin, int misoPin, int clkPin, int csPin) {
 	esp_err_t errRc = ::spi_bus_initialize(
 			m_host,
 			&bus_config,
-			1 // DMA Channel
+			0 // DMA Channel
 	);
 
 	if (errRc != ESP_OK) {
@@ -80,7 +80,7 @@ void SPI::init(int mosiPin, int misoPin, int clkPin, int csPin) {
 	dev_config.cs_ena_pretrans  = 0;
 	dev_config.clock_speed_hz   = 1000000;
 	dev_config.spics_io_num     = csPin;
-	dev_config.flags            = SPI_DEVICE_NO_DUMMY | SPI_DEVICE_BIT_LSBFIRST;
+	dev_config.flags            = SPI_DEVICE_NO_DUMMY | SPI_DEVICE_BIT_LSBFIRST |  SPI_DEVICE_HALFDUPLEX;
 	dev_config.queue_size       = 1;
 	dev_config.pre_cb           = NULL;
 	dev_config.post_cb          = NULL;
@@ -116,33 +116,17 @@ void SPI::transfer(uint8_t* data, size_t dataLen) {
 		ESP_LOGD(LOG_TAG, "> %2d %.2x", i, data[i]);
 	}
 #endif
-#ifdef SWAP_BYTES
-	for (auto i=0; i<dataLen; i++) {
-		data[i] = SPI_SWAP_DATA_TX(data[i], 8);
-	}
-	#ifdef DEBUG
-		ESP_LOGD(LOG_TAG, "After byte swap: ");
-		for (auto i=0; i<dataLen; i++) {
-			ESP_LOGD(LOG_TAG, "> %2d %.2x", i, data[i]);
-		}
-	#endif
-#endif
 	spi_transaction_t trans_desc;
 	//trans_desc.address   = 0;
 	//trans_desc.command   = 0;
 	trans_desc.flags     = 0;
 	trans_desc.length    = dataLen * 8;
-	trans_desc.rxlength  = 0;
+	trans_desc.rxlength  = 8;
 	trans_desc.tx_buffer = data;
 	trans_desc.rx_buffer = data;
 
 	//ESP_LOGI(tag, "... Transferring");
 	esp_err_t rc = ::spi_device_transmit(m_handle, &trans_desc);
-#ifdef SWAP_BYTES
-	for (auto i=0; i<dataLen; i++) {
-		data[i] = SPI_SWAP_DATA_RX(data[i], 8);
-	}
-#endif
 	if (rc != ESP_OK) {
 		ESP_LOGE(LOG_TAG, "transfer:spi_device_transmit: %d", rc);
 	}

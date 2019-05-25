@@ -10,7 +10,6 @@
 #include <driver/spi_master.h>
 #include <driver/gpio.h>
 
-// #define SWAP_BYTES
 /**
  * @brief Handle %SPI protocol.
  */
